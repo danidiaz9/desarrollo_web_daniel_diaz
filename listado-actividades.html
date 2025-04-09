@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Listado de actividades</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="contenedor">
+    <h1>Listado de actividades</h1>
+    <nav>
+      <ul class="menu">
+        <li><a href="index.html">Portada</a></li>
+        <li><a href="informar-actividad.html">Agregar Actividad</a></li>
+        <li><a href="listado-actividades.html">Listado de Actividades</a></li>
+        <li><a href="estadisticas.html">Estadísticas</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="contenedor">
+    <!-- Contenedor del listado -->
+    <div id="listado-actividades">
+      <table class="tabla-actividades">
+        <thead>
+          <tr>
+            <th>Inicio</th>
+            <th>Término</th>
+            <th>Comuna</th>
+            <th>Sector</th>
+            <th>Tema</th>
+            <th>Organizador</th>
+            <th>Fotos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="actividad" data-id="1" onclick="mostrarDetalle(1)">
+            <td>2025-03-28 12:00</td>
+            <td>2025-03-28 14:00</td>
+            <td>Santiago</td>
+            <td>Beauchef 850</td>
+            <td>Boxeo</td>
+            <td>Juan Pérez</td>
+            <td>3</td>
+          </tr>
+          <tr class="actividad" data-id="2" onclick="mostrarDetalle(2)">
+            <td>2025-03-28 12:00</td>
+            <td>2025-03-28 14:00</td>
+            <td>Santiago</td>
+            <td>Beauchef 850</td>
+            <td>Boxeo</td>
+            <td>Juan Pérez</td>
+            <td>3</td>
+          </tr>
+          <tr class="actividad" data-id="3" onclick="mostrarDetalle(3)">
+            <td>2025-03-28 12:00</td>
+            <td>2025-03-28 14:00</td>
+            <td>Santiago</td>
+            <td>Beauchef 850</td>
+            <td>Boxeo</td>
+            <td>Juan Pérez</td>
+            <td>3</td>
+          </tr>
+          <tr class="actividad" data-id="4" onclick="mostrarDetalle(4)">
+            <td>2025-03-28 12:00</td>
+            <td>2025-03-28 14:00</td>
+            <td>Santiago</td>
+            <td>Beauchef 850</td>
+            <td>Boxeo</td>
+            <td>Juan Pérez</td>
+            <td>3</td>
+          </tr>
+          <tr class="actividad" data-id="5" onclick="mostrarDetalle(5)">
+            <td>2025-03-28 12:00</td>
+            <td>2025-03-28 14:00</td>
+            <td>Santiago</td>
+            <td>Beauchef 850</td>
+            <td>Boxeo</td>
+            <td>Juan Pérez</td>
+            <td>3</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Contenedor del detalle (inicialmente oculto) -->
+    <div id="detalle-actividad" style="display:none;">
+      <h2>Detalle de la actividad</h2>
+      <div id="detalle-contenido">
+        <!-- Aquí se inyectará el detalle generado dinámicamente -->
+      </div>
+      <div class="botones-detalle">
+        <button onclick="volverListado()">Volver al listado</button>
+        <button onclick="window.location.href='index.html'">Volver a Portada</button>
+      </div>
+    </div>
+  </main>
+  <script src="js/listado.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Agregar Actividad</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="contenedor">
+    <h1>Informar Nueva Actividad</h1>
+    <nav>
+      <ul class="menu">
+        <li><a href="index.html">Portada</a></li>
+        <li><a href="informar-actividad.html">Agregar Actividad</a></li>
+        <li><a href="listado-actividades.html">Listado de Actividades</a></li>
+        <li><a href="estadisticas.html">Estadísticas</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="contenedor">
+    <form id="form-actividad" onsubmit="return validarFormulario(event)">
+      <!-- Sección Lugar -->
+      <fieldset>
+        <legend>¿Dónde?</legend>
+        <div class="form-group">
+          <label>Región:</label>
+          <select id="region" required>
+            <option value="">Seleccione...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Comuna:</label>
+          <select id="comuna" required disabled>
+            <option value="">Primero seleccione región</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Sector:</label>
+          <input type="text" id="sector" maxlength="100">
+        </div>
+      </fieldset>
+      <!-- Sección Organizador -->
+      <fieldset>
+        <legend>¿Quién organiza?</legend>
+        <div class="form-group">
+          <label>Nombre:</label>
+          <input type="text" id="nombre" maxlength="200" required>
+        </div>
+        <div class="form-group">
+          <label>Email:</label>
+          <input type="email" id="email" maxlength="100" required>
+        </div>
+        <div class="form-group">
+          <label>Número de celular:</label>
+          <input type="tel" id="telefono" pattern="\+\d{3}\.\d{8}">
+        </div>
+        <div class="form-group">
+          <label>Contactar por:</label>
+          <div>
+            <input type="checkbox" name="whatsapp" onclick="revisaCheck(this);"> Whatsapp
+            <input type="text" id="whatsapp" name="whatsapp-id" style="display:none;" minlength="4" maxlength="50"> <br>
+            <input type="checkbox" name="instagram" onclick="revisaCheck(this);"> Instagram
+            <input type="text" id="instagram" name="instagram-id" style="display:none;" minlength="4" maxlength="50"><br>
+            <input type="checkbox" name="telegram" onclick="revisaCheck(this);"> Telegram
+            <input type="text" id="telegram" name="telegram-id" style="display:none;" minlength="4" maxlength="50"><br>
+            <input type="checkbox" name="x" onclick="revisaCheck(this);"> X
+            <input type="text" id="x" name="x-id" style="display:none;" minlength="4" maxlength="50"><br>
+            <input type="checkbox" name="tiktok" onclick="revisaCheck(this);"> TikTok
+            <input type="text" id="tiktok" name="tiktok-id" style="display:none;" minlength="4" maxlength="50"><br>
+            <input type="checkbox" name="otra" onclick="revisaCheck(this);"> Otra
+            <input type="text" id="otra" name="otra-id" style="display:none;" minlength="4" maxlength="50"><br>
+          </div>  
+        </div>
+      </fieldset>
+      <!-- Sección Actividad -->
+      <fieldset>
+        <legend>¿Cuándo y de qué trata?</legend>
+        <div class="form-group">
+          <label>Inicio:</label>
+          <input type="datetime-local" id="inicio" required>
+        </div>
+        <div class="form-group">
+          <label>Término:</label>
+          <input type="datetime-local" id="termino">
+        </div>
+        <div class="form-group">
+          <label>Descripción:</label>
+          <textarea cols="50" rows="10"></textarea>
+        </div>    
+        <div class="form-group">
+          <label>Tema:</label>
+          <select id="tema" required>
+            <option value="">Seleccione un tema...</option>
+            <option value="musica">Música</option>
+            <option value="deporte">Deporte</option>
+            <option value="ciencias">Ciencias</option>
+            <option value="religion">Religión</option>
+            <option value="politica">Política</option>
+            <option value="tecnologia">Tecnología</option>
+            <option value="juegos">Juegos</option>
+            <option value="baile">Baile</option>
+            <option value="comida">Comida</option>
+            <option value="otro">Otro</option>
+          </select>
+          <input type="text" id="tema-otro" hidden minlength="3" maxlength="15">
+        </div>
+        <div id="fotos-container">
+          <div class="form-group">
+            <label>Foto:</label>
+            <input type="file" accept="image/*" required>
+            <button type="button" id="agregar-foto">➕ Agregar otra foto</button>
+          </div>
+        </div>
+      </fieldset>
+      <button type="submit">Agregar esta actividad</button>
+    </form>
+    <!-- Modal de confirmación -->
+    <div id="confirmation-modal" hidden>
+      <p>¿Está seguro que desea agregar esta actividad?</p>
+      <button id="confirmar-si">Sí, estoy seguro</button>
+      <button id="confirmar-no">No, volver al formulario</button>
+    </div>
+    <!-- Modal de éxito -->
+    <div id="success-modal" hidden>
+      <p>¡Hemos recibido su información! Muchas gracias y suerte en su actividad.</p>
+      <a href="index.html" class="boton">Volver a portada</a>
+    </div>
+  </main>
+  <script src="js/formulario.js"></script>
+</body>
+</html>
