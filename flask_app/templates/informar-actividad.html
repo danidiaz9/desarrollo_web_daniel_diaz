@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Agregar Actividad{% endblock %}
+
+{% block head %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/formulario.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="contenedor">
+    <h1>Informar Nueva Actividad</h1>
+    
+    <form id="form-actividad" method="POST" action="{{ url_for('informar') }}" enctype="multipart/form-data" onsubmit="return validarFormulario(event)">
+        
+        <!-- Sección: Ubicación -->
+        <fieldset>
+            <legend>¿Dónde se realizará?</legend>
+            
+            <div class="form-group">
+                <label for="region">Región:</label>
+                <select id="region" name="region" required class="form-control">
+                    <option value="">Seleccione una región...</option>
+                    {% for region in regiones %}
+                    <option value="{{ region.id }}">{{ region.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="comuna">Comuna:</label>
+                <select id="comuna" name="comuna" required disabled class="form-control">
+                    <option value="">Primero seleccione una región</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="sector">Sector (opcional):</label>
+                <input type="text" id="sector" name="sector" maxlength="100" class="form-control">
+            </div>
+        </fieldset>
+
+        <!-- Sección: Organizador -->
+        <fieldset>
+            <legend>Datos del organizador</legend>
+            
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" required maxlength="200" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required maxlength="100" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="celular">Celular:</label>
+                <input type="tel" id="celular" name="celular" pattern="\+569\d{8}" placeholder="+56912345678" class="form-control">
+            </div>
+        </fieldset>
+
+        <!-- Sección: Contacto -->
+        <fieldset>
+            <legend>Medios de contacto (seleccione al menos uno)</legend>
+            
+            <div class="contacto-group">
+                {% for metodo in ['whatsapp', 'telegram', 'twitter', 'instagram', 'tiktok', 'otro'] %}
+                <div class="form-check">
+                    <input type="checkbox" id="{{ metodo }}" name="contacto" value="{{ metodo }}" class="form-check-input" onclick="toggleContacto(this)">
+                    <label for="{{ metodo }}" class="form-check-label">{{ metodo|title }}</label>
+                    <input type="text" id="{{ metodo }}-id" name="{{ metodo }}_id" class="form-control contacto-input" style="display: none;">
+                </div>
+                {% endfor %}
+            </div>
+        </fieldset>
+
+        <!-- Sección: Detalles actividad -->
+        <fieldset>
+            <legend>Detalles de la actividad</legend>
+            
+            <div class="form-group">
+                <label for="fecha_inicio">Fecha y hora de inicio:</label>
+                <input type="datetime-local" id="fecha_inicio" name="fecha_inicio" required class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="fecha_termino">Fecha y hora de término (opcional):</label>
+                <input type="datetime-local" id="fecha_termino" name="fecha_termino" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" name="descripcion" required maxlength="500" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="tema">Tema principal:</label>
+                <select id="tema" name="tema" required class="form-control">
+                    <option value="">Seleccione un tema...</option>
+                    {% for tema in temas %}
+                    <option value="{{ tema }}">{{ tema|title }}</option>
+                    {% endfor %}
+                </select>
+                <input type="text" id="tema_otro" name="tema_otro" class="form-control" placeholder="Especifique otro tema" style="display: none;">
+            </div>
+
+            <div class="form-group">
+                <label>Fotos (1-5 imágenes):</label>
+                <div id="fotos-container">
+                    <input type="file" name="fotos" accept="image/*" required multiple class="form-control">
+                </div>
+                <small class="form-text text-muted">Formatos permitidos: JPG, PNG. Máx. 5MB por imagen</small>
+            </div>
+        </fieldset>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Enviar Actividad</button>
+            <button type="reset" class="btn btn-secondary">Limpiar Formulario</button>
+        </div>
+
+    </form>
+
+    <!-- Modales -->
+    <div id="modal-confirmacion" class="modal" style="display: none;">
+        <div class="modal-content">
+            <p>¿Está seguro de querer enviar esta actividad?</p>
+            <button onclick="confirmarEnvio()" class="btn btn-confirm">Confirmar</button>
+            <button onclick="cerrarModal()" class="btn btn-cancel">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="modal-exito" class="modal" style="display: none;">
+        <div class="modal-content">
+            <p>¡Actividad registrada exitosamente! ✔️</p>
+            <a href="{{ url_for('index') }}" class="btn btn-success">Volver al inicio</a>
+        </div>
+    </div>
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    // Lógica para cargar comunas dinámicamente
+    document.getElementById('region').addEventListener('change', function() {
+        const regionId = this.value;
+        fetch("/api/comunas?region_id=" + regionId)
+            .then(response => response.json())
+            .then(data => {
+                const comunaSelect = document.getElementById('comuna');
+                comunaSelect.innerHTML = '<option value="">Seleccione comuna...</option>';
+                data.forEach(comuna => {
+                    const option = document.createElement('option');
+                    option.value = comuna.id;
+                    option.textContent = comuna.nombre;
+                    comunaSelect.appendChild(option);
+                });
+                comunaSelect.disabled = false;
+            });
+    });
+
+    // Validación de tema "otro"
+    document.getElementById('tema').addEventListener('change', function() {
+        const temaOtro = document.getElementById('tema_otro');
+        temaOtro.style.display = this.value === 'otro' ? 'block' : 'none';
+        if (this.value !== 'otro') temaOtro.value = '';
+    });
+
+    function toggleContacto(checkbox) {
+        const input = document.getElementById(checkbox.id + '-id');
+        if (checkbox.checked) {
+            input.style.display = 'block';
+            input.required = true;
+        } else {
+            input.style.display = 'none';
+            input.value = '';
+            input.required = false;
+        }
+    }
+
+    // Lógica para fotos
+    let photoCount = 1;
+    document.getElementById('agregar-foto').addEventListener('click', () => {
+        if (photoCount < 5) {
+            const newInput = document.createElement('input');
+            newInput.type = 'file';
+            newInput.name = 'fotos';
+            newInput.accept = 'image/*';
+            newInput.className = 'form-control';
+            document.getElementById('fotos-container').appendChild(newInput);
+            photoCount++;
+        }
+    });
+</script>
+{% endblock %}

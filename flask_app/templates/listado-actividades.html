@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Listado de Actividades{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/listado.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<h1>Listado de actividades</h1>
+<div id="listado-actividades">
+    <table class="tabla-actividades">
+        <!-- Cabeceras -->
+        <tbody>
+            {% for actividad in actividades.items %}
+            <tr class="actividad" data-id="{{ actividad.id }}" onclick="mostrarDetalle(actividad.id)">
+                <td>{{ actividad.dia_hora_inicio.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ actividad.dia_hora_termino.strftime('%Y-%m-%d %H:%M') if actividad.dia_hora_termino }}</td>
+                <td>{{ actividad.comuna.nombre }}</td>
+                <td>{{ actividad.sector }}</td>
+                <td>
+                    {% for tema in actividad.temas %}
+                    {{ tema.tema }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>{{ actividad.nombre }}</td>
+                <td>{{ actividad.fotos|length }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <!-- Paginación -->
+    <div class="paginacion">
+        {% if actividades.has_prev %}
+        <a href="?page={{ actividades.prev_num }}">Anterior</a>
+        {% endif %}
+        <span>Página {{ actividades.page }}</span>
+        {% if actividades.has_next %}
+        <a href="?page={{ actividades.next_num }}">Siguiente</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
