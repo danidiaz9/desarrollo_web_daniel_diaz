@@ -4,6 +4,7 @@
 
 {% block content %}
 <h2>Últimas 5 actividades</h2>
+<div style="overflow-x:auto">
 <table class="tabla-actividades">
     <thead>
         <tr>
@@ -19,7 +20,13 @@
         {% for actividad in actividades %}
         <tr>
             <td>{{ actividad.dia_hora_inicio.strftime('%Y-%m-%d %H:%M') }}</td>
-            <td>{{ actividad.dia_hora_termino.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>
+                {% if actividad.dia_hora_termino %}
+                    {{ actividad.dia_hora_termino.strftime('%Y-%m-%d %H:%M') }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
             <td>{{ actividad.comuna.nombre }}</td>
             <td>{{ actividad.sector }}</td>
             <td>
@@ -30,11 +37,12 @@
             <td>
                 {% if actividad.fotos %}
                 <img src="{{ url_for('static', filename='uploads/' + actividad.fotos[0].nombre_archivo) }}" 
-                     class="miniatura" alt="Miniatura actividad">
+                     class="miniatura" alt="Foto de actividad en {{ actividad.comuna.nombre }}">
                 {% endif %}
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+</div>
 {% endblock %}

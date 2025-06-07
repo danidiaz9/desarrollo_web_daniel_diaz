@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Enum, ForeignKey
+from sqlalchemy.sql import func
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -30,6 +31,7 @@ class Actividad(Base):
     dia_hora_inicio = Column(DateTime, nullable=False)
     dia_hora_termino = Column(DateTime, nullable=False)
     descripcion = Column(String(500), nullable=False)
+    comentarios = relationship("Comentario", back_populates="actividad")
     
     comuna = relationship("Comuna", back_populates="actividades")
     fotos = relationship("Foto", back_populates="actividad")
@@ -47,7 +49,7 @@ class Foto(Base):
 class ContactarPor(Base):
     __tablename__ = 'contactar_por'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    nombre = Column(Enum('whatsapp', 'telegram', 'twitter', 'instagram', 'tiktok', 'otra'), nullable=False)
+    nombre = Column(Enum('whatsapp', 'telegram', 'X', 'instagram', 'tiktok', 'otra'), nullable=False)
     identificador = Column(String(150), nullable=False)
     actividad_id = Column(Integer, ForeignKey('actividad.id'), nullable=False)
     actividad = relationship("Actividad", back_populates="contactos")
@@ -55,7 +57,16 @@ class ContactarPor(Base):
 class ActividadTema(Base):
     __tablename__ = 'actividad_tema'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    tema = Column(Enum('musica', 'deporte', 'ciencias', 'religion', 'politica', 'tecnologia', 'juegos', 'baile', 'comida', 'otro'), nullable=False)
+    tema = Column(Enum('música', 'deporte', 'ciencias', 'religión', 'política', 'tecnología', 'juegos', 'baile', 'comida', 'otro'), nullable=False)
     glosa_otro = Column(String(15))
     actividad_id = Column(Integer, ForeignKey('actividad.id'), nullable=False)
     actividad = relationship("Actividad", back_populates="temas")
+
+class Comentario(Base):
+    __tablename__ = 'comentario'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    nombre = Column(String(80), nullable=False)
+    texto = Column(String(300), nullable=False)
+    fecha = Column(DateTime, nullable=False, default=func.now())
+    actividad_id = Column(Integer, ForeignKey('actividad.id'), nullable=False)
+    actividad = relationship("Actividad", back_populates="comentarios")

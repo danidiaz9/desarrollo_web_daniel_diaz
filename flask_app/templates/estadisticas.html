@@ -1,40 +1,26 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Estadísticas de actividades</title>
-  <link rel="stylesheet" href="../static/css/styles.css">
-</head>
-<body>
-  <header class="contenedor">
-    <h1>Estadísticas de actividades</h1>
-    <nav>
-      <ul class="menu">
-        <li><a href="{{ url_for('index') }}">Portada</a></li>
-        <li><a href="{{ url_for('informar') }}">Agregar Actividad</a></li>
-        <li><a href="{{ url_for('listado') }}">Listado de Actividades</a></li>
-        <li><a href="{{ url_for('estadisticas') }}">Estadísticas</a></li>
-      </ul>
-    </nav>
-  </header>
-  <main class="contenedor">
-    <div class="graficos">
-      <div class="grafico">
-        <h3>Actividades por día</h3>
-        <img src="img/grafico-lineas.png" alt="Gráfico de líneas que muestra la cantidad de actividades realizadas cada día">
-      </div>
-      <div class="grafico">
-        <h3>Actividades por tipo</h3>
-        <img src="img/grafico-torta.png" alt="Gráfico de torta que muestra el porcentaje de actividades por tipo">
-      </div>
-      <div class="grafico">
-        <h3>Actividades por horario</h3>
-        <img src="img/grafico-barras.png" alt="Gráfico de barras que muestra las actividades divididas por horario">
-      </div>
-    </div>
-    <div>
-      <a href="index.html" class="boton">Volver a Portada</a>
-    </div>
-  </main>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Estadísticas{% endblock %}
+
+{% block content %}
+<h1>Estadísticas de actividades</h1>
+
+<div class="graficos">
+  <div class="grafico">
+    <h3>Actividades por día</h3>
+    <img src="{{ url_for('static', filename='img/grafico-lineas.png') }}" alt="Gráfico de líneas que muestra la cantidad de actividades realizadas cada día">
+  </div>
+  <div class="grafico">
+    <h3>Actividades por tipo</h3>
+    <img src="{{ url_for('static', filename='img/grafico-torta.png') }}" alt="Gráfico de torta que muestra el porcentaje de actividades por tipo">
+  </div>
+  <div class="grafico">
+    <h3>Actividades por horario</h3>
+    <img src="{{ url_for('static', filename='img/grafico-barras.png') }}" alt="Gráfico de barras que muestra las actividades divididas por horario">
+  </div>
+</div>
+
+<div style="margin-top: 20px;">
+  <a href="{{ url_for('index') }}" class="btn btn-secondary">Volver a Portada</a>
+</div>
+{% endblock %}

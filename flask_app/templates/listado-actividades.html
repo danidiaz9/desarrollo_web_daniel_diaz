@@ -8,24 +8,42 @@
 {% endblock %}
 
 {% block content %}
-<h1>Listado de actividades</h1>
+<h2>Listado de actividades</h2>
 <div id="listado-actividades">
-    <table class="tabla-actividades">
-        <!-- Cabeceras -->
+    <table class="tabla-actividades" role="table" aria-label="Listado de actividades">
+        <thead>
+            <tr>
+                <th>Inicio</th>
+                <th>Término</th>
+                <th>Comuna</th>
+                <th>Sector</th>
+                <th>Temas</th>
+                <th>Organizador</th>
+                <th>Fotos</th>
+            </tr>
+        </thead>
         <tbody>
-            {% for actividad in actividades.items %}
-            <tr class="actividad" data-id="{{ actividad.id }}" onclick="mostrarDetalle(actividad.id)">
+            {% for actividad in actividades %}
+            <tr class="actividad" data-id="{{ actividad.id }}" onclick="DetalleActividad('{{ actividad.id }}')" style="cursor:pointer;">
                 <td>{{ actividad.dia_hora_inicio.strftime('%Y-%m-%d %H:%M') }}</td>
-                <td>{{ actividad.dia_hora_termino.strftime('%Y-%m-%d %H:%M') if actividad.dia_hora_termino }}</td>
+                <td>
+                    {{ actividad.dia_hora_termino.strftime('%Y-%m-%d %H:%M') if actividad.dia_hora_termino else '-' }}
+                </td>
                 <td>{{ actividad.comuna.nombre }}</td>
                 <td>{{ actividad.sector }}</td>
                 <td>
                     {% for tema in actividad.temas %}
-                    {{ tema.tema }}{% if not loop.last %}, {% endif %}
+                        {{ tema.tema }}{% if not loop.last %}, {% endif %}
                     {% endfor %}
                 </td>
                 <td>{{ actividad.nombre }}</td>
-                <td>{{ actividad.fotos|length }}</td>
+                <td>
+                    {% if actividad.fotos %}
+                        📷 {{ actividad.fotos|length }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -33,13 +51,18 @@
     
     <!-- Paginación -->
     <div class="paginacion">
-        {% if actividades.has_prev %}
-        <a href="?page={{ actividades.prev_num }}">Anterior</a>
+        {% if page > 1 %}
+            <a href="?page={{ page - 1 }}">Anterior</a>
         {% endif %}
-        <span>Página {{ actividades.page }}</span>
-        {% if actividades.has_next %}
-        <a href="?page={{ actividades.next_num }}">Siguiente</a>
+        <span>Página {{ page }} de {{ max_page }}</span>
+        {% if page < max_page %}
+            <a href="?page={{ page + 1 }}">Siguiente</a>
         {% endif %}
     </div>
+</div> <!-- cierre de listado-actividades -->
+
+<div id="detalle-actividad" style="display:none;">
+    <div id="detalle-contenido"></div>
+    <button class="btn btn-secondary" onclick="volverListado()" aria-label="Volver al listado de actividades">← Volver al listado</button>
 </div>
 {% endblock %}

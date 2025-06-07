@@ -1,58 +1,15 @@
-const actividades = [
-  {
-    id: 1,
-    inicio: "2025-03-28 12:00",
-    termino: "2025-03-28 14:00",
-    comuna: "Santiago",
-    sector: "Beauchef 850",
-    tema: "Boxeo",
-    organizador: "Juan Pérez",
-    fotos: ["img/boxeo.png", "img/boxeo.png", "img/boxeo.png"]
-  },
-  {
-    id: 2,
-    inicio: "2025-03-29 10:00",
-    termino: "2025-03-29 12:00",
-    comuna: "Santiago",
-    sector: "Centro",
-    tema: "Fútbol",
-    organizador: "María López",
-    fotos: ["img/frutas.png", "img/frutas.png"]
-  },
-];
-
-function mostrarDetalle(id) {
-  // Buscamos la actividad por id en el arreglo
-  const actividad = actividades.find(a => a.id === id);
-  if (!actividad) {
-    alert('Actividad no encontrada');
-    return;
-  }
-
-  // Generamos el contenido que mostrará el detalle de la actividad
-  const contenido = `
-    <p><strong>Inicio:</strong> ${actividad.inicio}</p>
-    <p><strong>Término:</strong> ${actividad.termino}</p>
-    <p><strong>Comuna:</strong> ${actividad.comuna}</p>
-    <p><strong>Sector:</strong> ${actividad.sector}</p>
-    <p><strong>Tema:</strong> ${actividad.tema}</p>
-    <p><strong>Organizador:</strong> ${actividad.organizador}</p>
-    <p><strong>Total de fotos:</strong> ${actividad.fotos.length}</p>
-    <div class="galeria">
-      ${actividad.fotos
-        .map((foto, i) => `
-          <div class="foto-contenedor" style="display: inline-block; position: relative;">
-            <img id="foto-${i}" src="${foto}" width="320" height="240"
-                 onclick="ampliarFoto(this)" alt="Foto de ${actividad.tema}">
-          </div>
-        `).join('')}
-    </div>
-  `;
-  
-  // Oculta el listado y muestra el detalle
-  document.getElementById("listado-actividades").style.display = "none";
-  document.getElementById("detalle-actividad").style.display = "block";
-  document.getElementById("detalle-contenido").innerHTML = contenido;
+function DetalleActividad(id) {
+  fetch(`/api/actividad/${id}`)
+    .then(response => {
+      if (!response.ok) throw new Error('No se pudo obtener el detalle');
+      return response.text();
+    })
+    .then(html => {
+      document.getElementById("listado-actividades").style.display = "none";
+      document.getElementById("detalle-actividad").style.display = "block";
+      document.getElementById("detalle-contenido").innerHTML = html;
+    })
+    .catch(error => alert(error));
 }
 
 function volverListado() {
@@ -66,21 +23,39 @@ function ampliarFoto(img) {
   if (img.getAttribute('data-enlarged') === "true") return;
   img.setAttribute('data-enlarged', "true");
 
-  // Guarda el tamaño original de la imagen
-  const originalWidth = img.width;
-  const originalHeight = img.height;
+  // Guarda los estilos originales de la imagen
+  const originalWidth = img.style.width;
+  const originalHeight = img.style.height;
+  const originalMaxWidth = img.style.maxWidth;
+  const originalMaxHeight = img.style.maxHeight;
+  const originalBoxShadow = img.style.boxShadow;
+  const originalPosition = img.style.position;
+  const originalZIndex = img.style.zIndex;
+  const originalBackground = img.style.background;
 
-  // Cambia el tamaño de la imagen a 800x600
-  img.width = 800;
-  img.height = 600;
+  // Cambia los estilos para ampliar la imagen
+  img.style.width = "auto";
+  img.style.height = "auto";
+  img.style.maxWidth = "90vw";
+  img.style.maxHeight = "90vh";
+  img.style.boxShadow = "0 0 20px #000";
+  img.style.position = "relative";
+  img.style.zIndex = "1000";
+  img.style.background = "#fff";
 
   // Crea un botón para cerrar el modo ampliado
   const contenedor = img.parentElement;
   const botonCerrar = document.createElement("button");
   botonCerrar.textContent = "Cerrar";
   botonCerrar.onclick = function() {
-    img.width = originalWidth;
-    img.height = originalHeight;
+    img.style.width = originalWidth;
+    img.style.height = originalHeight;
+    img.style.maxWidth = originalMaxWidth;
+    img.style.maxHeight = originalMaxHeight;
+    img.style.boxShadow = originalBoxShadow;
+    img.style.position = originalPosition;
+    img.style.zIndex = originalZIndex;
+    img.style.background = originalBackground;
     img.removeAttribute('data-enlarged');
     if (botonCerrar.parentElement) {
       botonCerrar.parentElement.removeChild(botonCerrar);
@@ -89,5 +64,6 @@ function ampliarFoto(img) {
   botonCerrar.style.position = "absolute";
   botonCerrar.style.top = "5px";
   botonCerrar.style.right = "5px";
+  botonCerrar.style.zIndex = "1001";
   contenedor.appendChild(botonCerrar);
 }

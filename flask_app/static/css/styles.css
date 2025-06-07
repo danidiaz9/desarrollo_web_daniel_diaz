@@ -46,13 +46,17 @@ body {
 .modal-contenido {
     background-color: white;
     color: #000;
-    margin: 15% auto;
-    padding: 20px;
-    width: 70%;
-    z-index: 1001;
+    margin: 5% auto;
+    padding: 2rem;
+    width: 90%;
+    max-width: 700px;
+    position: relative;
+    border-radius: 8px;
 }
 
 .cerrar-modal {
+    top: 10px;
+    right: 10px;
     position: absolute;
     background: red;
     color: white;
@@ -62,7 +66,13 @@ body {
     border: none;
     cursor: pointer;
     font-size: 20px;
-  }
+}
+
+.cerrar-modal:hover,
+.cerrar-modal:focus {
+    background: darkred;
+    outline: none;
+}
 
 .miniatura {
     width: 320px !important;
@@ -108,4 +118,55 @@ body {
         overflow-x: auto;
         display: block;
     }
+}
+
+button, input, select, textarea {
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.alert {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+.alert-success { background-color: #d4edda; color: #155724; }
+.alert-error { background-color: #f8d7da; color: #721c24; }
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+ul {
+  padding-left: 1rem;
+}
+
+li {
+  margin-bottom: 1rem;
+}
+
+li strong {
+  color: #333;
+}
+
+li small {
+  color: #888;
 }

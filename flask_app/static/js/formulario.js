@@ -108,18 +108,35 @@ const validarFormulario = (e) => {
     return false;
   }
 
-  // Validar tema "otro"
+  // Validar temas
   const temaSelect = document.getElementById('tema');
+  if (temaSelect.value === '') {
+    alert('Debe seleccionar un tema');
+    return false;
+  }
+
+  // Validar tema "otro"
   const temaOtro = document.getElementById('tema-otro');
   if (temaSelect.value === 'otro' && temaOtro.value.trim().length < 3) {
     alert('Debe describir el tema (mínimo 3 caracteres)');
     return false;
   }
 
-  // Si todas las validaciones pasan, mostrar el modal de confirmación.
-  document.getElementById('confirmation-modal').hidden = false;
+  // Si todo está OK, muestra el modal de confirmación
+  document.getElementById('modal-confirmacion').style.display = 'block';
 
-  return false; // Evitamos que el formulario se envíe inmediatamente.
+  // Al confirmar, envía el formulario
+  document.querySelector('#modal-confirmacion .btn-confirm').onclick = function() {
+    document.getElementById('modal-confirmacion').style.display = 'none';
+    document.getElementById('form-actividad').submit();
+  };
+
+  // Al cancelar, solo cierra el modal
+  document.querySelector('#modal-confirmacion .btn-cancel').onclick = function() {
+    document.getElementById('modal-confirmacion').style.display = 'none';
+  };
+
+  return false; // Evita el envío inmediato
 };
 
 function validarContactos() {
@@ -162,13 +179,32 @@ function validarContactos() {
 }
 
 // Configurar eventos para los botones de confirmación
-document.getElementById('confirmar-si').addEventListener('click', () => {
-  document.getElementById('confirmation-modal').hidden = true;
-  document.getElementById('success-modal').hidden = false;
+document.querySelector('#modal-confirmacion .btn-confirm').addEventListener('click', () => {
+  document.getElementById('modal-confirmacion').hidden = true;
+  document.getElementById('modal-exito').hidden = false;
 });
-document.getElementById('confirmar-no').addEventListener('click', () => {
-  document.getElementById('confirmation-modal').hidden = true;
+document.querySelector('#modal-confirmacion .btn-cancel').addEventListener('click', () => {
+  document.getElementById('modal-confirmacion').hidden = true;
 });
 
 // Se asocia el evento de validación al formulario
-document.getElementById('form-actividad').addEventListener('submit', validarFormulario);
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById('form-actividad');
+  if (form) {
+    form.addEventListener('submit', validarFormulario);
+  }
+
+  const confirmBtn = document.querySelector('#modal-confirmacion .btn-confirm');
+  const cancelBtn = document.querySelector('#modal-confirmacion .btn-cancel');
+  
+  if (confirmBtn && cancelBtn) {
+    confirmBtn.addEventListener('click', () => {
+      document.getElementById('modal-confirmacion').hidden = true;
+      document.getElementById('modal-exito').hidden = false;
+    });
+  
+    cancelBtn.addEventListener('click', () => {
+      document.getElementById('modal-confirmacion').hidden = true;
+    });
+  }
+});

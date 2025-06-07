@@ -1,6 +1,6 @@
-from sqlalchemy import create_engine, func
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, joinedload
-from .models import Region, Comuna, Actividad, Foto, ContactarPor, ActividadTema
+from .models import Region, Comuna, Actividad, Foto, ContactarPor, ActividadTema, Comentario
 
 # Configuración de la base de datos
 DB_NAME = "tarea2"
@@ -23,13 +23,13 @@ def get_regiones():
 
 def get_regiones_por_id(region_id):
     session = SessionLocal()
-    region = session.query(Region).get(region_id)
+    region = session.query(Region).filter_by(id=region_id).first()
     session.close()
     return region
 
 def get_comunas():
     session = SessionLocal()
-    comunas = session.query(Comuna).order_by(Comuna.nombre).all()
+    comunas = session.query(Comuna).all()
     session.close()
     return comunas
 
@@ -41,135 +41,139 @@ def get_comunas_por_region(region_id):
 
 def get_comuna_por_id(comuna_id):
     session = SessionLocal()
-    comuna = session.query(Comuna).get(comuna_id)
+    comuna = session.query(Comuna).filter_by(id=comuna_id).first()
     session.close()
     return comuna
 
-def create_actividad(actividad_data, temas_data, contactos_data, fotos_data):
-    session = SessionLocal()
-    try:
-        nueva_actividad = Actividad(**actividad_data)
-        session.add(nueva_actividad)
-        session.flush()
-        
-        for tema in temas_data:
-            session.add(ActividadTema(actividad_id=nueva_actividad.id, **tema))
-            
-        for contacto in contactos_data:
-            session.add(ContactarPor(actividad_id=nueva_actividad.id, **contacto))
-            
-        for foto in fotos_data:
-            session.add(Foto(actividad_id=nueva_actividad.id, **foto))
-            
-        session.commit()
-        return nueva_actividad.id
-    except Exception as e:
-        session.rollback()
-        raise e
-    finally:
-        session.close()
+# --- Actividades ---
 
-def get_ultimas_actividades(num):
+def create_actividad(comuna_id, sector, nombre, email, celular, dia_hora_inicio, dia_hora_termino, descripcion):
     session = SessionLocal()
-    try:
-        actividades = session.query(Actividad)\
-            .options(
-                joinedload(Actividad.comuna),
-                joinedload(Actividad.fotos),
-                joinedload(Actividad.temas),
-                joinedload(Actividad.contactos)
-            )\
-            .order_by(Actividad.dia_hora_inicio.desc())\
-            .limit(num)\
-            .all()
-        return actividades
-    finally:
-        session.close()
+    new_actividad = Actividad(
+        comuna_id=comuna_id,
+        sector=sector,
+        nombre=nombre,
+        email=email,
+        celular=celular,
+        dia_hora_inicio=dia_hora_inicio,
+        dia_hora_termino=dia_hora_termino,
+        descripcion=descripcion
+    )
+    session.add(new_actividad)
+    session.commit()
+    session.close() 
 
-def get_actividades_paginadas(page=1, per_page=5):
+def get_actividades():
     session = SessionLocal()
-    try:
-        actividades = session.query(Actividad)\
-            .options(
-                joinedload(Actividad.comuna),
-                joinedload(Actividad.fotos),
-                joinedload(Actividad.temas),
-                joinedload(Actividad.contactos)
-            )\
-            .order_by(Actividad.dia_hora_inicio.desc())\
-            .offset((page - 1) * per_page)\
-            .limit(per_page)\
-            .all()
-        
-        total = session.query(Actividad).count()
-        return actividades, total
-
-    finally:
-        session.close()
+    actividades = session.query(Actividad).options(
+        joinedload(Actividad.comuna),
+        joinedload(Actividad.fotos),
+        joinedload(Actividad.temas),
+        joinedload(Actividad.contactos)
+    ).all()
+    session.close()
+    return actividades
 
 def get_actividad_por_id(actividad_id):
     session = SessionLocal()
-    try:
-        actividad = session.query(Actividad)\
-            .options(
-                joinedload(Actividad.comuna).joinedload(Comuna.region),
-                joinedload(Actividad.fotos),
-                joinedload(Actividad.temas),
-                joinedload(Actividad.contactos)
-            )\
-            .filter_by(id=actividad_id)\
-            .first()
-        return actividad
+    actividad = session.query(Actividad).options(
+        joinedload(Actividad.comuna),
+        joinedload(Actividad.fotos),
+        joinedload(Actividad.temas),
+        joinedload(Actividad.contactos),
+        joinedload(Actividad.comentarios)
+    ).filter_by(id=actividad_id).first()
+    session.close()
+    return actividad
 
-    finally:
-        session.close()
-
-def get_fotos_por_actividad(actividad_id):
+def get_actividad_por_campos(nombre, email, dia_hora_inicio):
     session = SessionLocal()
-    try:
-        fotos = session.query(Foto)\
-            .filter(Foto.actividad_id==actividad_id)\
-            .all()
-        return fotos
-    
-    finally:
-        session.close()
+    actividad = session.query(Actividad).filter_by(
+        nombre = nombre,
+        email = email,
+        dia_hora_inicio = dia_hora_inicio
+    ).first()
+    session.close()
+    return actividad
 
-def get_contar_actividades_por_tema():
+# --- Fotos ---
+def create_foto(actividad_id, filename):
     session = SessionLocal()
-    try:
-        cantidad = session.query(
-            ActividadTema.tema, 
-            func.count(ActividadTema.id).label('cantidad')
-            ).group_by(ActividadTema.tema).all()
-        return cantidad
-    finally:
-        session.close()
+    # filename debe ser solo el nombre del archivo, la ruta la defines tú
+    ruta_archivo = f"static/uploads/{filename}"
+    new_foto = Foto(
+        actividad_id=actividad_id,
+        ruta_archivo=ruta_archivo,
+        nombre_archivo=filename
+    )
+    session.add(new_foto)
+    session.commit()
+    session.close()
 
-def get_contar_actividades_por_comuna():
+def get_fotos():
     session = SessionLocal()
-    try:
-        cantidad = session.query(
-            Comuna.nombre, 
-            func.count(Actividad.id).label('cantidad')
-            ).join(Actividad)\
-            .group_by(Comuna.nombre)\
-            .order_by(func.count(Actividad.id).desc())\
-            .all()
-        return cantidad
-    finally:
-        session.close()
+    fotos = session.query(Foto).all()
+    session.close()
+    return fotos
+
+# --- Contactos ---
+def create_contacto(nombre, identificador, actividad_id):
+    session = SessionLocal()
+    new_contacto = ContactarPor(
+        nombre=nombre,  # tipo de contacto: 'whatsapp', 'telegram', etc.
+        identificador=identificador,
+        actividad_id=actividad_id
+    )
+    session.add(new_contacto)
+    session.commit()
+    session.close()
+
+def get_contactos():
+    session = SessionLocal()
+    contactos = session.query(ContactarPor).all()
+    session.close()
+    return contactos
+
+# --- Temas ---
+def create_tema(tema, glosa_otro, actividad_id):
+    session = SessionLocal()
+    new_tema = ActividadTema(
+        tema=tema,  # debe coincidir con los valores del Enum en el modelo
+        glosa_otro=glosa_otro,
+        actividad_id=actividad_id
+    )
+    session.add(new_tema)
+    session.commit()
+    session.close()
 
 def get_temas():
-    return [
-        "musica",
-        "deporte",
-        "ciencias",
-        "religion",
-        "politica",
-        "tecnologia",
-        "juegos",
-        "baile",
-        "comida",
-        "otro"
-    ]
+    session = SessionLocal()
+    temas = session.query(ActividadTema).all()
+    session.close()
+    return temas
+
+# --- Comentarios ---
+def create_comentario(nombre, texto, fecha, actividad_id):
+    session = SessionLocal()
+    from .models import Comentario
+    new_comentario = Comentario(
+        nombre=nombre,
+        texto=texto,
+        fecha=fecha,
+        actividad_id=actividad_id
+    )
+    session.add(new_comentario)
+    session.commit()
+    session.close()
+
+def get_comentarios():
+    session = SessionLocal()
+    comentarios = session.query(Comentario).all()
+    session.close()
+    return comentarios
+
+def get_comentarios_por_actividad(actividad_id):
+    session = SessionLocal()
+    comentarios = session.query(Comentario).filter_by(actividad_id=actividad_id).all()
+    session.close()
+    return comentarios

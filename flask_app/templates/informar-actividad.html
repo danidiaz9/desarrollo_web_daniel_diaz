@@ -10,8 +10,14 @@
 {% block content %}
 <main class="contenedor">
     <h1>Informar Nueva Actividad</h1>
-    
-    <form id="form-actividad" method="POST" action="{{ url_for('informar') }}" enctype="multipart/form-data" onsubmit="return validarFormulario(event)">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form id="form-actividad" method="POST" action="{{ url_for('informar') }}" enctype="multipart/form-data">
         
         <!-- Sección: Ubicación -->
         <fieldset>
@@ -65,7 +71,7 @@
             <legend>Medios de contacto (seleccione al menos uno)</legend>
             
             <div class="contacto-group">
-                {% for metodo in ['whatsapp', 'telegram', 'twitter', 'instagram', 'tiktok', 'otro'] %}
+                {% for metodo in ['whatsapp', 'telegram', 'X', 'instagram', 'tiktok', 'otra'] %}
                 <div class="form-check">
                     <input type="checkbox" id="{{ metodo }}" name="contacto" value="{{ metodo }}" class="form-check-input" onclick="toggleContacto(this)">
                     <label for="{{ metodo }}" class="form-check-label">{{ metodo|title }}</label>
@@ -98,9 +104,16 @@
                 <label for="tema">Tema principal:</label>
                 <select id="tema" name="tema" required class="form-control">
                     <option value="">Seleccione un tema...</option>
-                    {% for tema in temas %}
-                    <option value="{{ tema }}">{{ tema|title }}</option>
-                    {% endfor %}
+                    <option value="música">Música</option>
+                    <option value="deporte">Deporte</option>
+                    <option value="ciencias">Ciencias</option>
+                    <option value="religión">Religión</option>
+                    <option value="política">Política</option>
+                    <option value="tecnología">Tecnología</option>
+                    <option value="juegos">Juegos</option>
+                    <option value="baile">Baile</option>
+                    <option value="comida">Comida</option>
+                    <option value="otro">Otro</option>
                 </select>
                 <input type="text" id="tema_otro" name="tema_otro" class="form-control" placeholder="Especifique otro tema" style="display: none;">
             </div>
@@ -108,8 +121,9 @@
             <div class="form-group">
                 <label>Fotos (1-5 imágenes):</label>
                 <div id="fotos-container">
-                    <input type="file" name="fotos" accept="image/*" required multiple class="form-control">
+                    <input type="file" name="fotos[]" accept="image/*" required class="form-control">
                 </div>
+                <button type="button" id="agregar-foto" class="btn btn-secondary" style="margin-top:8px;">Agregar otra foto</button>
                 <small class="form-text text-muted">Formatos permitidos: JPG, PNG. Máx. 5MB por imagen</small>
             </div>
         </fieldset>
@@ -122,7 +136,7 @@
     </form>
 
     <!-- Modales -->
-    <div id="modal-confirmacion" class="modal" style="display: none;">
+    <div id="modal-confirmacion" class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title" style="display: none;">
         <div class="modal-content">
             <p>¿Está seguro de querer enviar esta actividad?</p>
             <button onclick="confirmarEnvio()" class="btn btn-confirm">Confirmar</button>
@@ -181,17 +195,22 @@
     }
 
     // Lógica para fotos
-    let photoCount = 1;
-    document.getElementById('agregar-foto').addEventListener('click', () => {
-        if (photoCount < 5) {
-            const newInput = document.createElement('input');
-            newInput.type = 'file';
-            newInput.name = 'fotos';
-            newInput.accept = 'image/*';
-            newInput.className = 'form-control';
-            document.getElementById('fotos-container').appendChild(newInput);
-            photoCount++;
-        }
+    document.addEventListener("DOMContentLoaded", function() {
+        let photoCount = document.querySelectorAll('#fotos-container input[type="file"]').length;
+        document.getElementById('agregar-foto').addEventListener('click', function() {
+            if (photoCount < 5) {
+                const newInput = document.createElement('input');
+                newInput.type = 'file';
+                newInput.name = 'fotos[]';
+                newInput.accept = 'image/*';
+                newInput.className = 'form-control';
+                newInput.style.marginTop = "5px";
+                document.getElementById('fotos-container').appendChild(newInput);
+                photoCount++;
+            } else {
+                alert("Solo puedes subir hasta 5 fotos.");
+            }
+        });
     });
 </script>
 {% endblock %}
