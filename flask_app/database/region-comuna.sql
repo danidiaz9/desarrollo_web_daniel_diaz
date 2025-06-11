@@ -1,4 +1,4 @@
--- Active: 1746648050713@@127.0.0.1@3306@tarea2
+-- Active: 1747097704751@@127.0.0.1@3306@tarea2
 
 INSERT INTO region (id, nombre) VALUES (1,'Región de Tarapacá');
 INSERT INTO region (id, nombre) VALUES (2,'Región de Antofagasta');

@@ -1,3 +1,4 @@
+-- Active: 1747097704751@@127.0.0.1@3306@tarea2
 CREATE TABLE IF NOT EXISTS `tarea2`.`comentario` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(80) NOT NULL,

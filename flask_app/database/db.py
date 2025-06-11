@@ -155,7 +155,6 @@ def get_temas():
 # --- Comentarios ---
 def create_comentario(nombre, texto, fecha, actividad_id):
     session = SessionLocal()
-    from .models import Comentario
     new_comentario = Comentario(
         nombre=nombre,
         texto=texto,

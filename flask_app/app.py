@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from collections import Counter
+import calendar
 import os
 import hashlib
 import filetype
@@ -107,8 +109,8 @@ def comunas():
 def detalle_actividad(actividad_id):
     actividad = get_actividad_por_id(actividad_id)
     if not actividad:
-        flash("Actividad no encontrada.", "error")
-        return redirect(url_for('listado'))
+        # Retorna HTML de error, no redirect
+        return render_template('404.html', mensaje="Actividad no encontrada"), 404
     return render_template('detalle-actividad.html', actividad=actividad)
 
 @app.route('/api/actividad/<int:actividad_id>/comentarios', methods=['POST'])
@@ -136,10 +138,67 @@ def agregar_comentario(actividad_id):
 @app.route('/api/actividad/<int:actividad_id>/comentarios', methods=['GET'])
 def lista_comentarios(actividad_id):
     comentarios = get_comentarios_por_actividad(actividad_id)
-    return jsonify([
+    # Formatea los comentarios para el frontend
+    comentarios_json = [
         {
-            'nombre': c.nombre,
-            'texto': c.texto,
-            'fecha': c.fecha.strftime('%Y-%m-%d %H:%M')
-        } for c in comentarios
-    ])
+            "nombre": c.nombre,
+            "texto": c.texto,
+            "fecha": c.fecha.strftime('%Y-%m-%d %H:%M')
+        }
+        for c in comentarios
+    ]
+    return jsonify(comentarios_json)
+
+@app.route("/api/estadisticas")
+def api_estadisticas():
+
+    actividades = get_actividades()
+
+    # --- Gráfico de líneas: actividades por día ---
+    fechas = [a.dia_hora_inicio.date() for a in actividades]
+    por_dia = Counter(fechas)
+    dias_ordenados = sorted(por_dia.items())
+    lineas = {
+        "dias": [d.strftime("%a %d") for d, _ in dias_ordenados],
+        "cantidades": [c for _, c in dias_ordenados]
+    }
+
+    # --- Gráfico de torta: actividades por tipo ---
+    tipos = []
+    for a in actividades:
+        tipos.extend([t.tema for t in a.temas])
+    tipos_contados = Counter(tipos)
+    torta = {
+        "tipos": list(tipos_contados.keys()),
+        "cantidades": list(tipos_contados.values())
+    }
+
+    # --- Gráfico de barras: horarios por mes ---
+    horarios = {
+        "mañana": lambda h: 5 <= h < 12,
+        "mediodía": lambda h: 12 <= h < 14,
+        "tarde": lambda h: 14 <= h < 21
+    }
+    resumen = {mes: {"mañana": 0, "mediodía": 0, "tarde": 0} for mes in range(1, 13)}
+
+    for a in actividades:
+        dt = a.dia_hora_inicio
+        h = dt.hour
+        for key, cond in horarios.items():
+            if cond(h):
+                resumen[dt.month][key] += 1
+                break
+
+    meses = [calendar.month_abbr[m] for m in sorted(resumen.keys())]
+    barras = {
+        "meses": meses,
+        "manana": [resumen[m]["mañana"] for m in sorted(resumen)],
+        "mediodia": [resumen[m]["mediodía"] for m in sorted(resumen)],
+        "tarde": [resumen[m]["tarde"] for m in sorted(resumen)]
+    }
+
+    return jsonify({
+        "lineas": lineas,
+        "torta": torta,
+        "barras": barras
+    })

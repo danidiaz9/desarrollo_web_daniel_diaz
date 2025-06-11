@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, DateTime, Enum, ForeignKey
-from sqlalchemy.sql import func
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -67,6 +66,6 @@ class Comentario(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     nombre = Column(String(80), nullable=False)
     texto = Column(String(300), nullable=False)
-    fecha = Column(DateTime, nullable=False, default=func.now())
+    fecha = Column(DateTime, nullable=False)
     actividad_id = Column(Integer, ForeignKey('actividad.id'), nullable=False)
     actividad = relationship("Actividad", back_populates="comentarios")

@@ -49,7 +49,7 @@
             <td>
                 {% if actividad.contactos %}
                     {% for contacto in actividad.contactos %}
-                        {{ contacto.tipo_contacto }}: {{ contacto.identificador }}{% if not loop.last %}, {% endif %}
+                        {{ contacto.nombre }}: {{ contacto.identificador }}{% if not loop.last %}, {% endif %}
                     {% endfor %}
                 {% else %}
                     -
@@ -76,74 +76,13 @@
     </table>
     <h2>Agregar Comentario</h2>
     <form id="form-comentario" data-actividad="{{ actividad.id }}">
-        <div>
-            <label>Nombre:</label>
-            <input type="text" name="nombre" id="comentario-nombre" required minlength="3" maxlength="80">
-        </div>
-        <div>
-            <label>Comentario:</label>
-            <textarea name="texto" id="comentario-texto" required rows="4" cols="50" minlength="5"></textarea>
-        </div>
+        <input type="text" id="comentario-nombre" placeholder="Tu nombre" required>
+        <textarea id="comentario-texto" placeholder="Escribe tu comentario" required></textarea>
         <button type="submit" class="btn btn-primary">Agregar comentario</button>
     </form>
-    <div id="errores-comentario" style="color:red; margin-top:10px;"></div>
-    <h3>Comentarios</h3>
-        <ul id="lista-comentarios" style="list-style-type: disc; padding-left: 20px;">
+    <ul id="lista-comentarios" style="list-style-type: disc; padding-left: 20px;">
         <!-- Comentarios se cargarán aquí vía JS -->
-        </ul>
+    </ul>
+    <div id="errores-comentario" style="color:red; margin-top:10px;"></div>
 </div>
 {% endblock %}
-
-{% block scripts %}
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("form-comentario");
-  const erroresDiv = document.getElementById("errores-comentario");
-  const listaComentarios = document.getElementById("lista-comentarios");
-  const actividadId = form.dataset.actividad;
-
-  const cargarComentarios = () => {
-    fetch(`/api/actividad/${actividadId}/comentarios`)
-      .then(res => res.json())
-      .then(comentarios => {
-        listaComentarios.innerHTML = "";
-        comentarios.forEach(c => {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${c.nombre}</strong> <small>(${c.fecha})</small><br>${c.texto}`;
-          listaComentarios.appendChild(li);
-        });
-      });
-  };
-
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    erroresDiv.innerHTML = "";
-
-    const nombre = document.getElementById("comentario-nombre").value.trim();
-    const texto = document.getElementById("comentario-texto").value.trim();
-
-    fetch(`/api/actividad/${actividadId}/comentarios`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nombre, texto })
-    })
-    .then(res => res.json().then(data => ({ status: res.status, data })))
-    .then(({ status, data }) => {
-      if (status === 201) {
-        document.getElementById("comentario-nombre").value = "";
-        document.getElementById("comentario-texto").value = "";
-        cargarComentarios();
-      } else if (status === 400) {
-        erroresDiv.innerHTML = data.errores.map(e => `<div>${e}</div>`).join("");
-      } else {
-        erroresDiv.textContent = "Error inesperado al agregar el comentario.";
-      }
-    })
-    .catch(() => {
-      erroresDiv.textContent = "Error de red al enviar el comentario.";
-    });
-  });
-
-  cargarComentarios();
-});
-</script>

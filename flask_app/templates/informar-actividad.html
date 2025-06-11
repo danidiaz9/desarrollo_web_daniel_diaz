@@ -62,7 +62,7 @@
 
             <div class="form-group">
                 <label for="celular">Celular:</label>
-                <input type="tel" id="celular" name="celular" pattern="\+569\d{8}" placeholder="+56912345678" class="form-control">
+                <input type="tel" id="celular" name="celular" placeholder="+569.12345678" class="form-control">
             </div>
         </fieldset>
 
@@ -121,7 +121,7 @@
             <div class="form-group">
                 <label>Fotos (1-5 imágenes):</label>
                 <div id="fotos-container">
-                    <input type="file" name="fotos[]" accept="image/*" required class="form-control">
+                    <input type="file" name="fotos" accept="image/*" required class="form-control">
                 </div>
                 <button type="button" id="agregar-foto" class="btn btn-secondary" style="margin-top:8px;">Agregar otra foto</button>
                 <small class="form-text text-muted">Formatos permitidos: JPG, PNG. Máx. 5MB por imagen</small>
@@ -201,7 +201,7 @@
             if (photoCount < 5) {
                 const newInput = document.createElement('input');
                 newInput.type = 'file';
-                newInput.name = 'fotos[]';
+                newInput.name = 'fotos';
                 newInput.accept = 'image/*';
                 newInput.className = 'form-control';
                 newInput.style.marginTop = "5px";

@@ -8,6 +8,7 @@ function DetalleActividad(id) {
       document.getElementById("listado-actividades").style.display = "none";
       document.getElementById("detalle-actividad").style.display = "block";
       document.getElementById("detalle-contenido").innerHTML = html;
+      inicializarComentariosDetalle(id); // <-- Ahora pasa la id como parámetro
     })
     .catch(error => alert(error));
 }
@@ -66,4 +67,57 @@ function ampliarFoto(img) {
   botonCerrar.style.right = "5px";
   botonCerrar.style.zIndex = "1001";
   contenedor.appendChild(botonCerrar);
+}
+
+// --- Comentarios en detalle de actividad ---
+function inicializarComentariosDetalle(actividadId) {
+  const form = document.getElementById("form-comentario");
+  if (!form) return;
+
+  const erroresDiv = document.getElementById("errores-comentario");
+  const listaComentarios = document.getElementById("lista-comentarios");
+
+  const cargarComentarios = () => {
+    fetch(`/api/actividad/${actividadId}/comentarios`)
+      .then(res => res.json())
+      .then(comentarios => {
+        listaComentarios.innerHTML = "";
+        comentarios.forEach(c => {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${c.nombre}</strong> <small>(${c.fecha})</small><br>${c.texto}`;
+          listaComentarios.appendChild(li);
+        });
+      });
+  };
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    erroresDiv.innerHTML = "";
+
+    const nombre = document.getElementById("comentario-nombre").value.trim();
+    const texto = document.getElementById("comentario-texto").value.trim();
+
+    fetch(`/api/actividad/${actividadId}/comentarios`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nombre, texto })
+    })
+    .then(res => res.json().then(data => ({ status: res.status, data })))
+    .then(({ status, data }) => {
+      if (status === 201) {
+        document.getElementById("comentario-nombre").value = "";
+        document.getElementById("comentario-texto").value = "";
+        cargarComentarios();
+      } else if (status === 400) {
+        erroresDiv.innerHTML = data.errores.map(e => `<div>${e}</div>`).join("");
+      } else {
+        erroresDiv.textContent = "Error inesperado al agregar el comentario.";
+      }
+    })
+    .catch(() => {
+      erroresDiv.textContent = "Error de red al enviar el comentario.";
+    });
+  });
+
+  cargarComentarios();
 }

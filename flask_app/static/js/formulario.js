@@ -1,32 +1,3 @@
-// Cargar regiones y comunas
-fetch('region_comuna.json')
-  .then(response => response.json())
-  .then(data => {
-    const regionSelect = document.getElementById('region');
-    data.regiones.forEach(region => {
-      const option = document.createElement('option');
-      option.value = region.id;
-      option.textContent = region.nombre;
-      regionSelect.appendChild(option);
-    });
-
-    regionSelect.addEventListener('change', (e) => {
-      const comunaSelect = document.getElementById('comuna');
-      comunaSelect.innerHTML = '<option value="">Seleccione comuna</option>';
-      const regionId = parseInt(e.target.value);
-      const region = data.regiones.find(r => r.id === regionId);
-      if (region && region.comunas) {
-        region.comunas.forEach(comuna => {
-          const option = document.createElement('option');
-          option.value = comuna.id;
-          option.textContent = comuna.nombre;
-          comunaSelect.appendChild(option);
-        });
-      }
-      comunaSelect.disabled = false;
-    });
-  });
-
 // Función que muestra o esconde el input asociado al método de contacto
 function revisaCheck(element) {
   const targetInput = document.getElementById(element.name);
@@ -48,8 +19,8 @@ document.getElementById('tema').addEventListener('change', function(e) {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  const inicioInput = document.getElementById('inicio');
-  const terminoInput = document.getElementById('termino');
+  const inicioInput = document.getElementById('fecha_inicio');
+  const terminoInput = document.getElementById('fecha_termino');
 
   // Función para la fecha
   const formatDate = (date) => {
@@ -90,8 +61,8 @@ const validarFormulario = (e) => {
   }
 
   // Validar fechas: solo si 'termino' tiene valor
-  const inicioVal = document.getElementById('inicio').value;
-  const terminoVal = document.getElementById('termino').value;
+  const inicioVal = document.getElementById('fecha_inicio').value;
+  const terminoVal = document.getElementById('fecha_termino').value;
   if (terminoVal) {
     const inicio = new Date(inicioVal);
     const termino = new Date(terminoVal);
@@ -102,8 +73,12 @@ const validarFormulario = (e) => {
   }
 
   // Validar fotos 
-  const fotos = document.querySelectorAll('#fotos-container input[type="file"]');
-  if (fotos.length < 1 || fotos.length > 5) {
+  const inputsFotos = document.querySelectorAll('#fotos-container input[type="file"]');
+  let cantidadArchivos = 0;
+  inputsFotos.forEach(input => {
+    if (input.files) cantidadArchivos += input.files.length;
+  });
+  if (cantidadArchivos < 1 || cantidadArchivos > 5) {
     alert('Debe subir entre 1 y 5 fotos');
     return false;
   }

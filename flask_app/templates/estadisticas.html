@@ -2,25 +2,35 @@
 
 {% block title %}Estadísticas{% endblock %}
 
+{% block head %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
 {% block content %}
 <h1>Estadísticas de actividades</h1>
 
 <div class="graficos">
   <div class="grafico">
     <h3>Actividades por día</h3>
-    <img src="{{ url_for('static', filename='img/grafico-lineas.png') }}" alt="Gráfico de líneas que muestra la cantidad de actividades realizadas cada día">
+    <canvas id="graficoLineas"></canvas>
   </div>
   <div class="grafico">
     <h3>Actividades por tipo</h3>
-    <img src="{{ url_for('static', filename='img/grafico-torta.png') }}" alt="Gráfico de torta que muestra el porcentaje de actividades por tipo">
+    <canvas id="graficoTorta"></canvas>
   </div>
   <div class="grafico">
-    <h3>Actividades por horario</h3>
-    <img src="{{ url_for('static', filename='img/grafico-barras.png') }}" alt="Gráfico de barras que muestra las actividades divididas por horario">
+    <h3>Actividades por horario y mes</h3>
+    <canvas id="graficoBarras"></canvas>
   </div>
 </div>
 
 <div style="margin-top: 20px;">
   <a href="{{ url_for('index') }}" class="btn btn-secondary">Volver a Portada</a>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/estadisticas.js') }}"></script>
 {% endblock %}
