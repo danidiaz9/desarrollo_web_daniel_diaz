@@ -2,11 +2,6 @@
 
 {% block title %}Agregar Actividad{% endblock %}
 
-{% block head %}
-{{ super() }}
-<script src="{{ url_for('static', filename='js/formulario.js') }}"></script>
-{% endblock %}
-
 {% block content %}
 <main class="contenedor">
     <h1>Informar Nueva Actividad</h1>
@@ -156,61 +151,5 @@
 
 {% block scripts %}
 {{ super() }}
-<script>
-    // Lógica para cargar comunas dinámicamente
-    document.getElementById('region').addEventListener('change', function() {
-        const regionId = this.value;
-        fetch("/api/comunas?region_id=" + regionId)
-            .then(response => response.json())
-            .then(data => {
-                const comunaSelect = document.getElementById('comuna');
-                comunaSelect.innerHTML = '<option value="">Seleccione comuna...</option>';
-                data.forEach(comuna => {
-                    const option = document.createElement('option');
-                    option.value = comuna.id;
-                    option.textContent = comuna.nombre;
-                    comunaSelect.appendChild(option);
-                });
-                comunaSelect.disabled = false;
-            });
-    });
-
-    // Validación de tema "otro"
-    document.getElementById('tema').addEventListener('change', function() {
-        const temaOtro = document.getElementById('tema_otro');
-        temaOtro.style.display = this.value === 'otro' ? 'block' : 'none';
-        if (this.value !== 'otro') temaOtro.value = '';
-    });
-
-    function toggleContacto(checkbox) {
-        const input = document.getElementById(checkbox.id + '-id');
-        if (checkbox.checked) {
-            input.style.display = 'block';
-            input.required = true;
-        } else {
-            input.style.display = 'none';
-            input.value = '';
-            input.required = false;
-        }
-    }
-
-    // Lógica para fotos
-    document.addEventListener("DOMContentLoaded", function() {
-        let photoCount = document.querySelectorAll('#fotos-container input[type="file"]').length;
-        document.getElementById('agregar-foto').addEventListener('click', function() {
-            if (photoCount < 5) {
-                const newInput = document.createElement('input');
-                newInput.type = 'file';
-                newInput.name = 'fotos';
-                newInput.accept = 'image/*';
-                newInput.className = 'form-control';
-                newInput.style.marginTop = "5px";
-                document.getElementById('fotos-container').appendChild(newInput);
-                photoCount++;
-            } else {
-                alert("Solo puedes subir hasta 5 fotos.");
-            }
-        });
-    });
-</script>
+<script src="{{ url_for('static', filename='js/formulario.js') }}"></script>
 {% endblock %}

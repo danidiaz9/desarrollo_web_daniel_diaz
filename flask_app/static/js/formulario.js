@@ -54,7 +54,7 @@ const validarFormulario = (e) => {
   }
 
   // Validar teléfono
-  const telefono = document.getElementById('telefono').value;
+  const telefono = document.getElementById('celular').value;
   if (telefono && !/^\+\d{3}\.\d{8}$/.test(telefono)) {
     alert('Formato de teléfono debe ser +NNN.NNNNNNNN');
     return false;
@@ -155,11 +155,11 @@ function validarContactos() {
 
 // Configurar eventos para los botones de confirmación
 document.querySelector('#modal-confirmacion .btn-confirm').addEventListener('click', () => {
-  document.getElementById('modal-confirmacion').hidden = true;
-  document.getElementById('modal-exito').hidden = false;
+  document.getElementById('modal-confirmacion').style.display = 'none';
+  document.getElementById('modal-exito').style.display = 'block';
 });
 document.querySelector('#modal-confirmacion .btn-cancel').addEventListener('click', () => {
-  document.getElementById('modal-confirmacion').hidden = true;
+  document.getElementById('modal-confirmacion').style.display = 'none';
 });
 
 // Se asocia el evento de validación al formulario
@@ -174,12 +174,76 @@ document.addEventListener("DOMContentLoaded", () => {
   
   if (confirmBtn && cancelBtn) {
     confirmBtn.addEventListener('click', () => {
-      document.getElementById('modal-confirmacion').hidden = true;
-      document.getElementById('modal-exito').hidden = false;
+      document.getElementById('modal-confirmacion').style.display = 'none';
+      document.getElementById('modal-exito').style.display = 'none';
     });
   
     cancelBtn.addEventListener('click', () => {
-      document.getElementById('modal-confirmacion').hidden = true;
+      document.getElementById('modal-confirmacion').style.display = 'none';
     });
+  }
+
+  // Cargar comunas dinámicamente
+  const regionSelect = document.getElementById('region');
+  if (regionSelect) {
+      regionSelect.addEventListener('change', function() {
+          const regionId = this.value;
+          fetch("/api/comunas?region_id=" + regionId)
+              .then(response => response.json())
+              .then(data => {
+                  const comunaSelect = document.getElementById('comuna');
+                  comunaSelect.innerHTML = '<option value="">Seleccione comuna...</option>';
+                  data.forEach(comuna => {
+                      const option = document.createElement('option');
+                      option.value = comuna.id;
+                      option.textContent = comuna.nombre;
+                      comunaSelect.appendChild(option);
+                  });
+                  comunaSelect.disabled = false;
+              });
+      });
+  }
+
+  // Validación de tema "otro"
+  const temaSelect = document.getElementById('tema');
+  if (temaSelect) {
+      temaSelect.addEventListener('change', function() {
+          const temaOtro = document.getElementById('tema_otro');
+          temaOtro.style.display = this.value === 'otro' ? 'block' : 'none';
+          if (this.value !== 'otro') temaOtro.value = '';
+      });
+  }
+
+  // Mostrar/ocultar inputs de contacto
+  window.toggleContacto = function(checkbox) {
+      const input = document.getElementById(checkbox.id + '-id');
+      if (checkbox.checked) {
+          input.style.display = 'block';
+          input.required = true;
+      } else {
+          input.style.display = 'none';
+          input.value = '';
+          input.required = false;
+      }
+  };
+
+  // Lógica para fotos
+  let photoCount = document.querySelectorAll('#fotos-container input[type="file"]').length;
+  const agregarFotoBtn = document.getElementById('agregar-foto');
+  if (agregarFotoBtn) {
+      agregarFotoBtn.addEventListener('click', function() {
+          if (photoCount < 5) {
+              const newInput = document.createElement('input');
+              newInput.type = 'file';
+              newInput.name = 'fotos';
+              newInput.accept = 'image/*';
+              newInput.className = 'form-control';
+              newInput.style.marginTop = "5px";
+              document.getElementById('fotos-container').appendChild(newInput);
+              photoCount++;
+          } else {
+              alert("Solo puedes subir hasta 5 fotos.");
+          }
+      });
   }
 });
