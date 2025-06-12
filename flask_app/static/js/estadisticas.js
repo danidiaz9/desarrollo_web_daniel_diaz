@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
             borderColor: "blue",
             fill: false
           }]
+        },
+        options: {
+          responsive: false // <-- Añadido
         }
       });
 
@@ -26,6 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
             data: data.torta.cantidades,
             backgroundColor: ["#f87171", "#60a5fa", "#34d399", "#fbbf24", "#a78bfa", "#f472b6"]
           }]
+        },
+        options: {
+          responsive: false // <-- Añadido
         }
       });
 
@@ -53,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
           ]
         },
         options: {
-          responsive: true,
+          responsive: false, // <-- Añadido
           scales: {
             y: { beginAtZero: true }
           }

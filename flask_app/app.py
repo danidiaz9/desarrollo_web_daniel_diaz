@@ -73,7 +73,7 @@ def informar():
                 flash("Archivo no permitido o no válido.", "error")
                 return render_template('informar-actividad.html', regiones=regiones)
         flash("¡Actividad registrada exitosamente!", "success")
-        return redirect(url_for('listado'))
+        return redirect(url_for('index'))
     
     return render_template('informar-actividad.html', regiones=regiones)
 

@@ -1,88 +1,96 @@
 {% block content %}
 <h2>Detalle de la Actividad</h2>
 <div class="tabla-actividades">
-    <table>
-        <tr>
-            <th>Inicio</th>
-            <td>{{ actividad.dia_hora_inicio.strftime('%Y-%m-%d %H:%M') }}</td>
-        </tr>
-        <tr>
-            <th>Término</th>
-            <td>
-                {{ actividad.dia_hora_termino.strftime('%Y-%m-%d %H:%M') if actividad.dia_hora_termino else '-' }}
-            </td>
-        </tr>
-        <tr>
-            <th>Comuna</th>
-            <td>{{ actividad.comuna.nombre }}</td>
-        </tr>
-        <tr>
-            <th>Sector</th>
-            <td>{{ actividad.sector }}</td>
-        </tr>
-        <tr>
-            <th>Temas</th>
-            <td>
-                {% for tema in actividad.temas %}
-                    {{ tema.tema }}{% if tema.glosa_otro %} ({{ tema.glosa_otro }}){% endif %}{% if not loop.last %}, {% endif %}
-                {% endfor %}
-            </td>
-        </tr>
-        <tr>
-            <th>Organizador</th>
-            <td>{{ actividad.nombre }}</td>
-        </tr>
-        <tr>
-            <th>Email</th>
-            <td>{{ actividad.email }}</td>
-        </tr>
-        <tr>
-            <th>Celular</th>
-            <td>{{ actividad.celular }}</td>
-        </tr>
-        <tr>
-            <th>Descripción</th>
-            <td>{{ actividad.descripcion }}</td>
-        </tr>
-        <tr>
-            <th>Contactos</th>
-            <td>
-                {% if actividad.contactos %}
-                    {% for contacto in actividad.contactos %}
-                        {{ contacto.nombre }}: {{ contacto.identificador }}{% if not loop.last %}, {% endif %}
-                    {% endfor %}
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <th>Fotos</th>
-            <td>
-                {% if actividad.fotos %}
-                    {% for foto in actividad.fotos %}
-                        <span style="position:relative; display:inline-block;">
-                            <img src="{{ url_for('static', filename='uploads/' ~ foto.nombre_archivo) }}"
-                                 alt="Foto de actividad en {{ actividad.comuna.nombre }}"
-                                 style="max-width:120px; max-height:120px; margin:5px; cursor:pointer;"
-                                 onclick="ampliarFoto(this)">
-                        </span>
-                    {% endfor %}
-                {% else %}
-                    No hay fotos.
-                {% endif %}
-            </td>
-        </tr>
-    </table>
-    <h2>Agregar Comentario</h2>
-    <form id="form-comentario" data-actividad="{{ actividad.id }}">
-        <input type="text" id="comentario-nombre" placeholder="Tu nombre" required>
-        <textarea id="comentario-texto" placeholder="Escribe tu comentario" required></textarea>
-        <button type="submit" class="btn btn-primary">Agregar comentario</button>
-    </form>
-    <ul id="lista-comentarios" style="list-style-type: disc; padding-left: 20px;">
-        <!-- Comentarios se cargarán aquí vía JS -->
-    </ul>
-    <div id="errores-comentario" style="color:red; margin-top:10px;"></div>
+    <div style="display: flex; gap: 2rem; align-items: flex-start;">
+        <!-- Columna izquierda: Detalles de la actividad -->
+        <div style="flex: 2;">
+            <table>
+                <tr>
+                    <th>Inicio</th>
+                    <td>{{ actividad.dia_hora_inicio.strftime('%Y-%m-%d %H:%M') }}</td>
+                </tr>
+                <tr>
+                    <th>Término</th>
+                    <td>
+                        {{ actividad.dia_hora_termino.strftime('%Y-%m-%d %H:%M') if actividad.dia_hora_termino else '-' }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Comuna</th>
+                    <td>{{ actividad.comuna.nombre }}</td>
+                </tr>
+                <tr>
+                    <th>Sector</th>
+                    <td>{{ actividad.sector }}</td>
+                </tr>
+                <tr>
+                    <th>Temas</th>
+                    <td>
+                        {% for tema in actividad.temas %}
+                            {{ tema.tema }}{% if tema.glosa_otro %} ({{ tema.glosa_otro }}){% endif %}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Organizador</th>
+                    <td>{{ actividad.nombre }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ actividad.email }}</td>
+                </tr>
+                <tr>
+                    <th>Celular</th>
+                    <td>{{ actividad.celular }}</td>
+                </tr>
+                <tr>
+                    <th>Descripción</th>
+                    <td>{{ actividad.descripcion }}</td>
+                </tr>
+                <tr>
+                    <th>Contactos</th>
+                    <td>
+                        {% if actividad.contactos %}
+                            {% for contacto in actividad.contactos %}
+                                {{ contacto.nombre }}: {{ contacto.identificador }}{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Fotos</th>
+                    <td>
+                        {% if actividad.fotos %}
+                            {% for foto in actividad.fotos %}
+                                <span style="position:relative; display:inline-block;">
+                                    <img src="{{ url_for('static', filename='uploads/' ~ foto.nombre_archivo) }}"
+                                         alt="Foto de actividad en {{ actividad.comuna.nombre }}"
+                                         style="max-width:120px; max-height:120px; margin:5px; cursor:pointer;"
+                                         onclick="ampliarFoto(this)">
+                                </span>
+                            {% endfor %}
+                        {% else %}
+                            No hay fotos.
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Columna derecha: Comentarios -->
+        <aside style="flex: 1; min-width: 300px; background: #f9f9f9; padding: 1rem; border-radius: 8px;">
+            <h3>Comentarios</h3>
+            <div id="errores-comentario" style="color: red;"></div>
+            <ul id="lista-comentarios" style="list-style-type: disc; padding-left: 20px;">
+                <!-- Comentarios se cargarán aquí vía JS -->
+            </ul>
+            <form id="form-comentario" data-actividad="{{ actividad.id }}">
+                <input type="text" id="comentario-nombre" placeholder="Tu nombre" required style="width: 100%; margin-bottom: 0.5rem;">
+                <textarea id="comentario-texto" placeholder="Escribe un comentario..." required style="width: 100%; margin-bottom: 0.5rem;"></textarea>
+                <button type="submit" class="btn btn-primary">Agregar comentario</button>
+            </form>
+        </aside>
+    </div>
 </div>
 {% endblock %}

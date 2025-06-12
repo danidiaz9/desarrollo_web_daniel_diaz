@@ -100,17 +100,6 @@ const validarFormulario = (e) => {
   // Si todo está OK, muestra el modal de confirmación
   document.getElementById('modal-confirmacion').style.display = 'block';
 
-  // Al confirmar, envía el formulario
-  document.querySelector('#modal-confirmacion .btn-confirm').onclick = function() {
-    document.getElementById('modal-confirmacion').style.display = 'none';
-    document.getElementById('form-actividad').submit();
-  };
-
-  // Al cancelar, solo cierra el modal
-  document.querySelector('#modal-confirmacion .btn-cancel').onclick = function() {
-    document.getElementById('modal-confirmacion').style.display = 'none';
-  };
-
   return false; // Evita el envío inmediato
 };
 
@@ -175,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (confirmBtn && cancelBtn) {
     confirmBtn.addEventListener('click', () => {
       document.getElementById('modal-confirmacion').style.display = 'none';
-      document.getElementById('modal-exito').style.display = 'none';
+      document.getElementById('form-actividad').submit();
     });
   
     cancelBtn.addEventListener('click', () => {
