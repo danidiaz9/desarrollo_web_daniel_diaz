@@ -97,7 +97,7 @@ const validarFormulario = (e) => {
     return false;
   }
 
-  // Si todo está OK, muestra el modal de confirmación
+  // Muestra el modal de confirmación
   document.getElementById('modal-confirmacion').classList.add('mostrar');
   return false; // Evita el envío inmediato
 };
@@ -131,7 +131,7 @@ function validarContactos() {
           return false;
       }
 
-      // Validar formato si es necesario
+      // Validar formato
       if (nombreContacto === "instagram" && !valor.startsWith("@")) {
           alert("El usuario de Instagram debe comenzar con @.");
           return false;

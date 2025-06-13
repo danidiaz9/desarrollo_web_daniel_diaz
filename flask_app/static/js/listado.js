@@ -8,7 +8,7 @@ function DetalleActividad(id) {
       document.getElementById("listado-actividades").style.display = "none";
       document.getElementById("detalle-actividad").style.display = "block";
       document.getElementById("detalle-contenido").innerHTML = html;
-      inicializarComentariosDetalle(id); // <-- Ahora pasa la id como parámetro
+      inicializarComentariosDetalle(id);
     })
     .catch(error => alert(error));
 }

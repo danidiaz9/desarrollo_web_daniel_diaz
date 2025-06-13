@@ -29,7 +29,7 @@ def validate_email(email: str) -> tuple[bool, str]:
 def validate_phone(number: str) -> tuple[bool, str]:
     """Valida formato de teléfono"""
     if not number:
-        return True, ""  # Campo opcional
+        return True, ""
     return bool(PHONE_REGEX.match(number)), "Formato debe ser +569 seguido de 8 dígitos"
 
 

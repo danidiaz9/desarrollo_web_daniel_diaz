@@ -2,68 +2,60 @@ document.addEventListener("DOMContentLoaded", () => {
   fetch("/api/estadisticas")
     .then(res => res.json())
     .then(data => {
-      // Gráfico de líneas
-      new Chart(document.getElementById("graficoLineas"), {
-        type: "line",
-        data: {
-          labels: data.lineas.dias,
-          datasets: [{
-            label: "Actividades por día",
-            data: data.lineas.cantidades,
-            borderColor: "blue",
-            fill: false
-          }]
-        },
-        options: {
-          responsive: false // <-- Añadido
-        }
+      // Gráfico de líneas (Actividades por día)
+      Highcharts.chart('graficoLineas', {
+        chart: { type: 'line', height: 200, width: 400 },
+        title: { text: null },
+        xAxis: { categories: data.lineas.dias },
+        yAxis: { title: { text: 'Cantidad' }, min: 0 },
+        series: [{
+          name: 'Actividades por día',
+          data: data.lineas.cantidades,
+          color: 'blue'
+        }],
+        credits: { enabled: false }
       });
 
-      // Gráfico de torta
-      new Chart(document.getElementById("graficoTorta"), {
-        type: "pie",
-        data: {
-          labels: data.torta.tipos,
-          datasets: [{
-            label: "Actividades por tipo",
-            data: data.torta.cantidades,
-            backgroundColor: ["#f87171", "#60a5fa", "#34d399", "#fbbf24", "#a78bfa", "#f472b6"]
-          }]
-        },
-        options: {
-          responsive: false // <-- Añadido
-        }
+      // Gráfico de torta (Actividades por tipo)
+      Highcharts.chart('graficoTorta', {
+        chart: { type: 'pie', height: 300, width: 300 },
+        title: { text: null },
+        series: [{
+          name: 'Cantidad',
+          colorByPoint: true,
+          data: data.torta.tipos.map((tipo, i) => ({
+            name: tipo,
+            y: data.torta.cantidades[i],
+            color: ["#f87171", "#60a5fa", "#34d399", "#fbbf24", "#a78bfa", "#f472b6"][i % 6]
+          }))
+        }],
+        credits: { enabled: false }
       });
 
-      // Gráfico de barras
-      new Chart(document.getElementById("graficoBarras"), {
-        type: "bar",
-        data: {
-          labels: data.barras.meses,
-          datasets: [
-            {
-              label: "Mañana",
-              data: data.barras.manana,
-              backgroundColor: "#60a5fa"
-            },
-            {
-              label: "Mediodía",
-              data: data.barras.mediodia,
-              backgroundColor: "#fbbf24"
-            },
-            {
-              label: "Tarde",
-              data: data.barras.tarde,
-              backgroundColor: "#34d399"
-            }
-          ]
-        },
-        options: {
-          responsive: false, // <-- Añadido
-          scales: {
-            y: { beginAtZero: true }
+      // Gráfico de barras (Actividades por horario y mes)
+      Highcharts.chart('graficoBarras', {
+        chart: { type: 'column', height: 200, width: 400 },
+        title: { text: null },
+        xAxis: { categories: data.barras.meses },
+        yAxis: { min: 0, title: { text: 'Cantidad' } },
+        series: [
+          {
+            name: 'Mañana',
+            data: data.barras.manana,
+            color: '#60a5fa'
+          },
+          {
+            name: 'Mediodía',
+            data: data.barras.mediodia,
+            color: '#fbbf24'
+          },
+          {
+            name: 'Tarde',
+            data: data.barras.tarde,
+            color: '#34d399'
           }
-        }
+        ],
+        credits: { enabled: false }
       });
     })
     .catch(error => {

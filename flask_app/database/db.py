@@ -99,7 +99,6 @@ def get_actividad_por_campos(nombre, email, dia_hora_inicio):
 # --- Fotos ---
 def create_foto(actividad_id, filename):
     session = SessionLocal()
-    # filename debe ser solo el nombre del archivo, la ruta la defines tú
     ruta_archivo = f"static/uploads/{filename}"
     new_foto = Foto(
         actividad_id=actividad_id,
@@ -138,7 +137,7 @@ def get_contactos():
 def create_tema(tema, glosa_otro, actividad_id):
     session = SessionLocal()
     new_tema = ActividadTema(
-        tema=tema,  # debe coincidir con los valores del Enum en el modelo
+        tema=tema,
         glosa_otro=glosa_otro,
         actividad_id=actividad_id
     )

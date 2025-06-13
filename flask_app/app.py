@@ -108,7 +108,6 @@ def comunas():
 def detalle_actividad(actividad_id):
     actividad = get_actividad_por_id(actividad_id)
     if not actividad:
-        # Retorna HTML de error, no redirect
         return render_template('404.html', mensaje="Actividad no encontrada"), 404
     return render_template('detalle-actividad.html', actividad=actividad)
 
