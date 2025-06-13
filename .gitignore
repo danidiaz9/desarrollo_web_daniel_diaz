@@ -295,6 +295,8 @@ pip-selfcheck.json
 
 # Local History for Visual Studio Code
 .history/
+flask_app/static/uploads/*
+!flask_app/static/uploads/.gitkeep
 
 # Built Visual Studio Code Extensions
 *.vsix
