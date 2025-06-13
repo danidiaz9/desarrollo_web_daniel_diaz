@@ -50,7 +50,6 @@ def informar():
         descripcion = datos.get('descripcion')
         tema = datos.get('tema')
         tema_otros = datos.get('tema_otro')
-        contactos = datos.getlist('contactos')
         fotos = request.files.getlist('fotos')
 
         create_actividad(comuna_id, sector, nombre, email, celular, dia_hora_inicio, dia_hora_termino, descripcion)

@@ -98,8 +98,7 @@ const validarFormulario = (e) => {
   }
 
   // Si todo está OK, muestra el modal de confirmación
-  document.getElementById('modal-confirmacion').style.display = 'block';
-
+  document.getElementById('modal-confirmacion').classList.add('mostrar');
   return false; // Evita el envío inmediato
 };
 
@@ -163,12 +162,15 @@ document.addEventListener("DOMContentLoaded", () => {
   
   if (confirmBtn && cancelBtn) {
     confirmBtn.addEventListener('click', () => {
-      document.getElementById('modal-confirmacion').style.display = 'none';
-      document.getElementById('form-actividad').submit();
+      document.getElementById('modal-confirmacion').classList.remove('mostrar');
+      document.getElementById('modal-exito').classList.add('mostrar');
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 2000); // 2 segundos para leer el mensaje
     });
   
     cancelBtn.addEventListener('click', () => {
-      document.getElementById('modal-confirmacion').style.display = 'none';
+      document.getElementById('modal-confirmacion').classList.remove('mostrar');
     });
   }
 
