@@ -23,9 +23,9 @@ flask_app/
 │   ├── js/                        # Lógica del frontend:
 │   │   ├── formulario.js          # Validaciones y envíos de formularios
 │   │   ├── listado.js             # Muestra detalles y amplía imágenes
-│   │   └── estadisticas.js        # Carga y renderiza gráficos con Chart.js
+│   │   └── estadisticas.js        # Carga y renderiza gráficos
 │   ├── img/                       # Gráficos estáticos y assets
-│   ├── icon/                      # Favicon e íconos
+│   ├── icon/                      # Ícono
 │   └── uploads/                   # Fotos subidas por usuarios
 ├── templates/
 │   ├── base.html                  # Layout general con bloques Jinja2
@@ -62,7 +62,7 @@ flask_app/
 ### 4. Estadísticas Dinámicas
 
 - Se expone **`GET /api/estadisticas`** que agrupa datos de actividades por día, tipo y horarios por mes.
-- [`estadisticas.html`](flask_app/templates/estadisticas.html) y [`estadisticas.js`](flask_app/static/js/estadisticas.js) utilizan **Chart.js** para mostrar:
+- [`estadisticas.html`](flask_app/templates/estadisticas.html) y [`estadisticas.js`](flask_app/static/js/estadisticas.js) utilizan **highcharts.js** para mostrar:
   - Gráfico de líneas (actividades por día).
   - Gráfico de torta (actividades por tipo).
   - Gráfico de barras (actividades por horario y mes).
