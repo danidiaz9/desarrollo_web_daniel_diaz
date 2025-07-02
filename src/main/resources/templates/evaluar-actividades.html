@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Evaluar Actividades</title>
+        <script th:src="@{/js/evaluar-actividades.js}"></script>
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+    </head>
+    <body>
+        <main class="contenedor">
+            <h1>Evaluar Actividades Realizadas</h1>
+            <table class="tabla-actividades">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha Inicio</th>
+                        <th>Sector</th>
+                        <th>Nombre</th>
+                        <th>Tema</th>
+                        <th>Nota</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-actividades"></tbody>
+            </table>
+        </main>
+    </body>
+</html>

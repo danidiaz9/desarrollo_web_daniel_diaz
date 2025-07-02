@@ -1,73 +1,72 @@
-# Tarea 3 – Desarrollo de Aplicaciones Web
+# Tarea 4 – Desarrollo de Aplicaciones Web
 
 ## Descripción del Proyecto
 
-Esta aplicación web ha sido desarrollada con **Flask** (backend) y **MySQL** (base de datos) para gestionar actividades sociales. Sus principales características son:
-
-- Registro y listado de actividades.
-- Visualización detallada de cada actividad (incluyendo fotos y contactos).
-- Comentarios en tiempo real (vía AJAX).
-- Generación dinámica de estadísticas con gráficos.
-- Validaciones robustas tanto en el cliente como en el servidor para datos y archivos.
+Esta aplicación web permite evaluar actividades sociales. Está desarrollada con **Spring Boot** (Java), **Thymeleaf** para las vistas y **MySQL** como base de datos.
 
 ## Estructura del Proyecto
 
 ```
-flask_app/
-├── app.py                         # Punto de entrada de la aplicación Flask
-├── database/
-│   ├── db.py                      # CRUD con SQLAlchemy y manejo de sesiones
-│   └── models.py                  # Modelos declarativos de la base de datos
-├── static/
-│   ├── css/                       # Estilos (styles.css)
-│   ├── js/                        # Lógica del frontend:
-│   │   ├── formulario.js          # Validaciones y envíos de formularios
-│   │   ├── listado.js             # Muestra detalles y amplía imágenes
-│   │   └── estadisticas.js        # Carga y renderiza gráficos
-│   ├── img/                       # Gráficos estáticos y assets
-│   ├── icon/                      # Ícono
-│   └── uploads/                   # Fotos subidas por usuarios
-├── templates/
-│   ├── base.html                  # Layout general con bloques Jinja2
-│   ├── index.html                 # Página de inicio (últimas actividades)
-│   ├── listado-actividades.html   # Listado con paginación y detalle AJAX
-│   ├── detalle-actividad.html     # Vista detalle con formulario de comentarios AJAX
-│   ├── informar-actividad.html    # Formulario de creación de actividad
-│   └── estadisticas.html          # Dashboard de estadísticas (gráficos)
-├── utils/
-│   └── validations.py             # Validaciones de campos, fechas y archivos
-├── requirements.txt               # Dependencias del proyecto
-└── README.md                      # Documentación principal
+tarea4/
+├── db/                        # Scripts SQL para la creación y carga de la base de datos
+│   └── *.sql
+├── pom.xml                    # Archivo de configuración de Maven (dependencias y build)
+├── README.md                  # Documentación y guía del proyecto
+└── src/
+    ├── main/
+    │   ├── java/
+    │   │   └── appsweb/
+    │   │       └── tareas/
+    │   │           └── tarea4/
+    │   │               ├── controllers/    # Controladores web y API (Spring MVC)
+    │   │               ├── models/         # Entidades JPA (mapeo de tablas)
+    │   │               ├── repositories/   # Interfaces de acceso a datos (Spring Data JPA)
+    │   │               └── services/       # Lógica de servicios de la aplicación
+    │   └── resources/
+    │       ├── static/
+    │       │   ├── css/                   # Archivos CSS estáticos
+    │       │   └── js/                    # Archivos JavaScript estáticos
+    │       ├── templates/                 # Vistas Thymeleaf (HTML)
+    │       └── application.properties     # Configuración de la aplicación (DB, puerto, etc.)
+    └── test/
+        └── java/
+            └── appsweb/
+                └── tareas/
+                    └── tarea4/
 ```
 
-## Puntos Clave y Decisiones
+## Principales Características
 
-### 1. Separación Modular
+- **Evaluación de actividades**: Se pueden asignar notas (1 a 7) a cada actividad finalizada, calculando el promedio automáticamente.
+- **Frontend dinámico**: El listado de actividades y la evaluación de notas se realiza mediante AJAX, sin recargar la página.
+- **Validaciones robustas**: Tanto en el backend (restricciones de notas, integridad de datos) como en el frontend (validación de rango y tipo de nota).
 
-- **`app.py`** contiene solo las rutas y la lógica de orquestación.
-- **`database/db.py`** maneja sesiones y operaciones de base de datos con SQLAlchemy.
+## Decisiones de Diseño y Detalles Técnicos
 
-### 2. Validaciones
+### 1. Separación de Capas
 
-- Cliente: [`formulario.js`](flask_app/static/js/formulario.js) valida email, teléfono, fechas, fotos, temas y contactos antes de enviar.
-- Servidor: [`validations.py`](flask_app/utils/validations.py) replica y refuerza esas validaciones, devolviendo listas de errores.
+- **Controladores**: Gestionan las rutas web y API, separando claramente las vistas (Thymeleaf) de los endpoints REST.
+- **Servicios**: Encapsulan la lógica de negocio, como el cálculo de promedios y la validación de notas.
+- **Repositorios**: Usan Spring Data JPA para acceder a la base de datos de forma declarativa.
 
-### 3. Comentarios en Tiempo Real (AJAX)
+### 2. AJAX y Experiencia de Usuario
 
-- Se creó la ruta **`GET/POST /api/actividad/<id>/comentarios`** que devuelve y recibe JSON.
-- [`detalle-actividad.html`](flask_app/templates/detalle-actividad.html) usa `fetch()` en [`listado.js`](flask_app/static/js/listado.js) para:
-  1. Cargar el listado inicial de comentarios.
-  2. Enviar nuevos comentarios sin recargar la página.
+- El frontend utiliza JavaScript para cargar y actualizar la tabla de actividades mediante fetch y JSON, permitiendo una experiencia fluida y sin recargas.
+- Al evaluar una actividad, la tabla se actualiza automáticamente.
 
-### 4. Estadísticas Dinámicas
+### 3. Validaciones
 
-- Se expone **`GET /api/estadisticas`** que agrupa datos de actividades por día, tipo y horarios por mes.
-- [`estadisticas.html`](flask_app/templates/estadisticas.html) y [`estadisticas.js`](flask_app/static/js/estadisticas.js) utilizan **highcharts.js** para mostrar:
-  - Gráfico de líneas (actividades por día).
-  - Gráfico de torta (actividades por tipo).
-  - Gráfico de barras (actividades por horario y mes).
+- **Backend**: Se valida que las notas estén en el rango permitido (1 a 7).
+- **Frontend**: Se valida el input del usuario antes de enviar la nota, mostrando mensajes claros en caso de error.
 
-### 5. Manejo de Archivos
+## Cómo Ejecutar
 
-- Rutas seguras con `secure_filename` y nombres hasheados (`hashlib.sha256`) para evitar colisiones.
-- Validación de extensiones y MIME type usando la librería `filetype`.
+1. Configura la base de datos MySQL y ejecuta los scripts en `db/`.
+2. Ajusta las credenciales en `src/main/resources/application.properties` si es necesario.
+3. Compila y ejecuta con Maven:
+   ```sh
+   ./mvnw spring-boot:run
+   ```
+4. Accede a la aplicación en [http://localhost:8080](http://localhost:8080).
+
+---
