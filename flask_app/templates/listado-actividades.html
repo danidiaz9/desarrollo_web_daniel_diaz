@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Listado de Actividades{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/listado.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<h2>Listado de actividades</h2>
+<div id="listado-actividades">
+    <table class="tabla-actividades" aria-label="Listado de actividades">
+        <thead>
+            <tr>
+                <th>Inicio</th>
+                <th>Término</th>
+                <th>Comuna</th>
+                <th>Sector</th>
+                <th>Temas</th>
+                <th>Organizador</th>
+                <th>Fotos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for actividad in actividades %}
+            <tr class="actividad" data-id="{{ actividad.id }}" onclick="DetalleActividad('{{ actividad.id }}')" style="cursor:pointer;">
+                <td>{{ actividad.dia_hora_inicio.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>
+                    {{ actividad.dia_hora_termino.strftime('%Y-%m-%d %H:%M') if actividad.dia_hora_termino else '-' }}
+                </td>
+                <td>{{ actividad.comuna.nombre }}</td>
+                <td>{{ actividad.sector }}</td>
+                <td>
+                    {% for tema in actividad.temas %}
+                        {{ tema.tema }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>{{ actividad.nombre }}</td>
+                <td>
+                    {% if actividad.fotos %}
+                        📷 {{ actividad.fotos|length }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <!-- Paginación -->
+    <div class="paginacion">
+        {% if page > 1 %}
+            <a href="?page={{ page - 1 }}">Anterior</a>
+        {% endif %}
+        <span>Página {{ page }} de {{ max_page }}</span>
+        {% if page < max_page %}
+            <a href="?page={{ page + 1 }}">Siguiente</a>
+        {% endif %}
+    </div>
+</div> 
+
+<div id="detalle-actividad" style="display:none;">
+    <div id="detalle-contenido"></div>
+    <button class="btn btn-secondary" onclick="volverListado()" aria-label="Volver al listado de actividades">← Volver al listado</button>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Estadísticas{% endblock %}
+
+{% block head %}
+{{ super() }}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+{% endblock %}
+
+{% block content %}
+<h1>Estadísticas de actividades</h1>
+
+<div class="graficos">
+  <div class="grafico">
+    <h3>Actividades por día</h3>
+    <div id="graficoLineas" style="width: 400px; height: 200px;"></div>
+  </div>
+  <div class="grafico">
+    <h3>Actividades por tipo</h3>
+    <div id="graficoTorta" style="width: 300px; height: 300px;"></div>
+  </div>
+  <div class="grafico">
+    <h3>Actividades por horario y mes</h3>
+    <div id="graficoBarras" style="width: 400px; height: 200px;"></div>
+  </div>
+</div>
+
+<div style="margin-top: 20px;">
+  <a href="{{ url_for('index') }}" class="btn btn-secondary">Volver a Portada</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/estadisticas.js') }}"></script>
+{% endblock %}

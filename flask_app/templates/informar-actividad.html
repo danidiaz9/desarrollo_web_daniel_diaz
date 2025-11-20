@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Agregar Actividad{% endblock %}
+
+{% block content %}
+
+    <h1>Informar Nueva Actividad</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form id="form-actividad" method="POST" action="{{ url_for('informar') }}" enctype="multipart/form-data">
+        
+        <!-- Sección: Ubicación -->
+        <fieldset>
+            <legend>¿Dónde se realizará?</legend>
+            
+            <div class="form-group">
+                <label for="region">Región:</label>
+                <select id="region" name="region" required class="form-control">
+                    <option value="">Seleccione una región...</option>
+                    {% for region in regiones %}
+                    <option value="{{ region.id }}">{{ region.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="comuna">Comuna:</label>
+                <select id="comuna" name="comuna" required disabled class="form-control">
+                    <option value="">Primero seleccione una región</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="sector">Sector (opcional):</label>
+                <input type="text" id="sector" name="sector" maxlength="100" class="form-control">
+            </div>
+        </fieldset>
+
+        <!-- Sección: Organizador -->
+        <fieldset>
+            <legend>Datos del organizador</legend>
+            
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" required maxlength="200" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required maxlength="100" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="celular">Celular:</label>
+                <input type="tel" id="celular" name="celular" placeholder="+569.12345678" class="form-control">
+            </div>
+        </fieldset>
+
+        <!-- Sección: Contacto -->
+        <fieldset>
+            <legend>Medios de contacto (seleccione al menos uno)</legend>
+            
+            <div class="contacto-group">
+                {% for metodo in ['whatsapp', 'telegram', 'X', 'instagram', 'tiktok', 'otra'] %}
+                <div class="form-check">
+                    <input type="checkbox" id="{{ metodo }}" name="contacto" value="{{ metodo }}" class="form-check-input" onclick="toggleContacto(this)">
+                    <label for="{{ metodo }}" class="form-check-label">{{ metodo|title }}</label>
+                    <input type="text" id="{{ metodo }}-id" name="{{ metodo }}_id" class="form-control contacto-input" style="display: none;">
+                </div>
+                {% endfor %}
+            </div>
+        </fieldset>
+
+        <!-- Sección: Detalles actividad -->
+        <fieldset>
+            <legend>Detalles de la actividad</legend>
+            
+            <div class="form-group">
+                <label for="fecha_inicio">Fecha y hora de inicio:</label>
+                <input type="datetime-local" id="fecha_inicio" name="fecha_inicio" required class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="fecha_termino">Fecha y hora de término (opcional):</label>
+                <input type="datetime-local" id="fecha_termino" name="fecha_termino" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" name="descripcion" required maxlength="500" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="tema">Tema principal:</label>
+                <select id="tema" name="tema" required class="form-control">
+                    <option value="">Seleccione un tema...</option>
+                    <option value="música">Música</option>
+                    <option value="deporte">Deporte</option>
+                    <option value="ciencias">Ciencias</option>
+                    <option value="religión">Religión</option>
+                    <option value="política">Política</option>
+                    <option value="tecnología">Tecnología</option>
+                    <option value="juegos">Juegos</option>
+                    <option value="baile">Baile</option>
+                    <option value="comida">Comida</option>
+                    <option value="otro">Otro</option>
+                </select>
+                <input type="text" id="tema_otro" name="tema_otro" class="form-control" placeholder="Especifique otro tema" style="display: none;">
+            </div>
+
+            <div class="form-group">
+                <label>Fotos (1-5 imágenes):</label>
+                <div id="fotos-container">
+                    <input type="file" name="fotos" accept="image/*" required class="form-control">
+                </div>
+                <button type="button" id="agregar-foto" class="btn btn-secondary" style="margin-top:8px;">Agregar otra foto</button>
+                <small class="form-text text-muted">Formatos permitidos: JPG, PNG. Máx. 5MB por imagen</small>
+            </div>
+        </fieldset>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Enviar Actividad</button>
+            <button type="reset" class="btn btn-secondary">Limpiar Formulario</button>
+        </div>
+
+    </form>
+
+    <!-- Modales -->
+    <div id="modal-confirmacion" class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title" style="display: none;">
+        <div class="modal-contenido">
+            <p id="confirm-title">¿Está seguro de querer enviar esta actividad?</p>
+            <button onclick="confirmarEnvio()" class="btn btn-confirm">Confirmar</button>
+            <button onclick="cerrarModal()" class="btn btn-cancel">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="modal-exito" class="modal" style="display: none;">
+        <div class="modal-contenido">
+            <p>¡Actividad registrada exitosamente! ✔️</p>
+            <a href="{{ url_for('index') }}" class="btn btn-success">Volver al inicio</a>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/formulario.js') }}"></script>
+{% endblock %}
